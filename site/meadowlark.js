@@ -1,5 +1,6 @@
 let express = require('express');
 let app = express();
+let fortune = require('./lib/fortune');
 
 //设置handlebars模板引擎
 let handlebars = require('express3-handlebars').create({defaultLayout:'main'});
@@ -8,15 +9,6 @@ app.set('view engine','handlebars');
 
 //设置端口
 app.set('port',process.env.PORT||3000);
-
-//虚拟幸运饼干数组
-let fortunes = [
-	"Conquer your fears or they will conquer you.",
-	"Rivers need springs.",
-	"Do not fear what you don't know.",
-	"You will have a pleasant surprise.",
-	"Whenever possible,keep it simple."
-];
 
 
 //路由
@@ -29,8 +21,7 @@ app.get(['','/home','/home.html'],(req,res)=>{
 });
 //关于页
 app.get(['/about','/about.html'],(req,res)=>{
-	let randomFortune = fortunes[Math.floor(Math.random()*fortunes.length)];
-	res.render('about',{fortune:randomFortune});
+	res.render('about',{fortune:fortune()});
 });
 //定制404页面
 app.use((req,res)=>{
