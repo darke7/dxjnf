@@ -11,6 +11,15 @@ app.set('view engine','handlebars');
 app.set('port',process.env.PORT||3000);
 
 
+
+
+
+//是否进行测试
+app.use((req,res,next)=>{
+	res.locals.showTests = app.get('env') != 'production' && req.query.test === '1';
+	next();
+});
+
 //路由
 //静态资源中间件
 app.use(express.static(__dirname+'/public'));
@@ -21,7 +30,10 @@ app.get(['','/home','/home.html'],(req,res)=>{
 });
 //关于页
 app.get(['/about','/about.html'],(req,res)=>{
-	res.render('about',{fortune:fortune()});
+	res.render('about',{
+		fortune:fortune(),
+		pageTestScript:'/qa/tests-about.js'
+	});
 });
 //定制404页面
 app.use((req,res)=>{
