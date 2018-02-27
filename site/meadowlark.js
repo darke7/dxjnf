@@ -12,7 +12,8 @@ app.set('port',process.env.PORT||3000);
 
 //禁用包含服务器 类型或详细信息 的响应头 
 app.disable('x-powered-by');
-
+//是否开启视图缓存，一般开发模式下禁用，生产环境下启用
+// app.set('view cache',true);
 
 //是否进行测试
 app.use((req,res,next)=>{
