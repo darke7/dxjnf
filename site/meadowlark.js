@@ -10,8 +10,8 @@ app.set('view engine','handlebars');
 //设置端口
 app.set('port',process.env.PORT||3000);
 
-
-
+//禁用 包含服务器类型或详细信息的响应头 
+app.disable('x-powered-by');
 
 
 //是否进行测试
