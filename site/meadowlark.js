@@ -3,7 +3,19 @@ let app = express();
 let fortune = require('./lib/fortune');
 
 //设置handlebars模板引擎
-let handlebars = require('express3-handlebars').create({defaultLayout:'main'});
+let handlebars = require('express3-handlebars').create({
+	defaultLayout:'main',
+	helpers:{
+		section(name,options){	//模拟段落的辅助方法
+			if(!this._sections){
+				this._sections = {};
+			}
+			this._sections[name] = options.fn(this);
+			return null;
+		}
+	}
+});
+
 app.engine('handlebars',handlebars.engine);
 app.set('view engine','handlebars');
 
@@ -46,6 +58,10 @@ app.get(['/about','/about.html'],(req,res)=>{
 		fortune:fortune(),
 		pageTestScript:'/qa/tests-about.js'
 	});
+});
+
+app.get(['/jquerytest','/jquerytest.html'],(req,res)=>{
+	res.render('jquerytest');
 });
 
 //定制404页面
