@@ -7,12 +7,29 @@
 		<link rel="stylesheet" href="/vendor/mocha.css">
 	{{/if}}
 	<script src="http://code.jquery.com/jquery-2.2.4.min.js"></script>
+	<style>
+		header{
+			text-align: left;
+		}
+		header img{
+			width: 100px;
+			height: 100px;
+		}
+		.netwidth{
+			width: 1200px;
+			margin: auto;
+		}
+	</style>
 </head>
 <body>
 	<header>
-		<img src="img/logo.jpg" alt="">
+		<div class="netwidth">
+			<img src="img/logo.jpg" alt="">
+		</div>
 	</header>
-	{{{body}}}
+	<div class="netwidth">
+		{{{body}}}
+	</div>
 
 	{{#if showTests}}
 		<div id="mocha"></div>

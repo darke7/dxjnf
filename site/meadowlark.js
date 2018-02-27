@@ -15,13 +15,23 @@ app.disable('x-powered-by');
 //是否开启视图缓存，一般开发模式下禁用，生产环境下启用
 // app.set('view cache',true);
 
+//天气组件的中间件
+app.use((req,res,next)=>{
+	if(!res.locals.partials){
+		res.locals.partials = {};
+	}
+	res.locals.partials.weather = getWeatherData();
+	console.log(res.locals.partials.weather)
+	next();
+});
+
 //是否进行测试
 app.use((req,res,next)=>{
 	res.locals.showTests = app.get('env') != 'production' && req.query.test === '1';
 	next();
 });
 
-//路由
+
 //静态资源中间件
 app.use(express.static(__dirname+'/public'));
 
@@ -29,6 +39,7 @@ app.use(express.static(__dirname+'/public'));
 app.get(['','/home','/home.html'],(req,res)=>{
 	res.render('home');
 });
+
 //关于页
 app.get(['/about','/about.html'],(req,res)=>{
 	res.render('about',{
@@ -36,11 +47,13 @@ app.get(['/about','/about.html'],(req,res)=>{
 		pageTestScript:'/qa/tests-about.js'
 	});
 });
+
 //定制404页面
 app.use((req,res)=>{
 	res.status(404);
 	res.render('404');
 });
+
 //定制500页面
 app.use((err,req,res)=>{
 	console.log(err.stack);
@@ -51,3 +64,33 @@ app.use((err,req,res)=>{
 app.listen(app.get('port'),()=>{
 	console.log(`Express started on http://localhost:${app.get('port')}`);
 });
+
+
+
+let getWeatherData = ()=>{
+	return {
+		locations:[
+			{
+				name:'Portland',
+				forecastUrl:'http://www.wunderground.com/US/OR/Portland.html',
+				iconUrl:'http://icons-ak.wxug.com/i/c/k/cloudy.gif',
+				weather:'Overcast',
+				temp:'54.1 F (12.3 C)'
+			},
+			{
+				name:'Bend',
+				forecastUrl:'http://www.wunderground.com/US/OR/Bend.html',
+				iconUrl:'http://icons-ak.wxug.com/i/c/k/partlycloudy.gif',
+				weather:'Partly Cloudy',
+				temp:'55.0 F (12.8 C)'
+			},
+			{
+				name:'Manzanita',
+				forecastUrl:'http://www.wunderground.com/US/OR/Manzanita.html',
+				iconUrl:'http://icons-ak.wxug.com/i/c/k/rain.gif',
+				weather:'Light Rain',
+				temp:'55.0 F (12.8 C)'
+			}
+		]
+	};
+}
