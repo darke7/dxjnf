@@ -1,7 +1,8 @@
 let express = require('express');
 let app = express();
 let fortune = require('./lib/fortune');
-
+let formidable = require('formidable');
+let fs = require('fs');
 //设置handlebars模板引擎
 let handlebars = require('express3-handlebars').create({
 	defaultLayout:'main',
@@ -93,6 +94,27 @@ app.post(['/process','/process.html'],(req,res)=>{
 });
 app.get(['/thank-you','/thank-you.html'],(req,res)=>{
 	res.render('thank-you');
+});
+
+//文件上传
+app.get(['/contest/vacation-photo','/contest/vacation-photo.html'],(req,res)=>{
+	let now = new Date();
+	res.render('contest/vacation-photo',{
+		year:now.getFullYear(),month:now.getMonth()
+	});
+});
+app.post('/contest/vacation-photo/:year/:month',(req,res)=>{
+	let form = new formidable.IncomingForm();
+	form.parse(req,(err,fields,files)=>{
+		if(err){
+			return res.redirect(303,'/error');
+		}
+		console.log('received fields:');
+		console.log(fields);
+		console.log('received files:');
+		console.log(files);
+		res.redirect(303,'/thank-you');
+	})
 });
 
 //定制404页面
