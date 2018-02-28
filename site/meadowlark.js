@@ -33,16 +33,14 @@ app.use((req,res,next)=>{
 		res.locals.partials = {};
 	}
 	res.locals.partials.weather = getWeatherData();
-	console.log(res.locals.partials.weather)
 	next();
 });
 
-//是否进行测试
+//开启测试模式
 app.use((req,res,next)=>{
 	res.locals.showTests = app.get('env') != 'production' && req.query.test === '1';
 	next();
 });
-
 
 //静态资源中间件
 app.use(express.static(__dirname+'/public'));
@@ -60,8 +58,22 @@ app.get(['/about','/about.html'],(req,res)=>{
 	});
 });
 
+//段落测试页
 app.get(['/jquerytest','/jquerytest.html'],(req,res)=>{
 	res.render('jquerytest');
+});
+
+//客户端模版页
+app.get(['/nursery-rhyme','/nursery-rhyme.html'],(req,res)=>{
+	res.render('nursery-rhyme');
+});//客户端模版页json数据
+app.get(['/data/nursery-rhyme','/data/nursery-rhyme.html'],(req,res)=>{
+	res.json({
+		animal:'squirrel',
+		bodyPart:'tail',
+		adjective:'bushy',
+		noun:'heck'
+	});
 });
 
 //定制404页面
