@@ -27,6 +27,9 @@ app.disable('x-powered-by');
 //是否开启视图缓存，一般开发模式下禁用，生产环境下启用
 // app.set('view cache',true);
 
+//解析post请求URL编码体的中间件
+app.use(require('body-parser')());
+
 //天气组件的中间件
 app.use((req,res,next)=>{
 	if(!res.locals.partials){
@@ -74,6 +77,22 @@ app.get(['/data/nursery-rhyme','/data/nursery-rhyme.html'],(req,res)=>{
 		adjective:'bushy',
 		noun:'heck'
 	});
+});
+
+//提交表单
+app.get(['/newsletter','/newsletter.html'],(req,res)=>{
+	//CSRF会在后面添加，目前只提供一个虚拟值
+	res.render('newsletter',{csrf:'CSRF token goes here'});
+});
+app.post(['/process','/process.html'],(req,res)=>{
+	console.log(`form querystring = ${req.query.form}`);
+	console.log(`CSEF token (from hidden form field) : ${req.body._csrf}`);
+	console.log(`Name (from visible form fiel) : ${req.body.name}`);
+	console.log(`Email (from visible from field) : ${req.body.email}`);
+	res.redirect(303,'/thank-you');
+});
+app.get(['/thank-you','/thank-you.html'],(req,res)=>{
+	res.render('thank-you');
 });
 
 //定制404页面
