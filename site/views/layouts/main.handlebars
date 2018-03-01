@@ -3,6 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Meadowlark Travel</title>
+	<link href="https://cdn.bootcss.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
 	{{{_sections.head}}}
 	{{#if showTests}}
 		<link rel="stylesheet" href="/vendor/mocha.css">
@@ -27,6 +28,12 @@
 			<img src="/img/logo.jpg" alt="">
 		</div>
 	</header>
+	{{#if flash}}
+		<div class="alert alert-dismissible alert-{{flash.type}}">
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+			<strong>{{flash.info}}</strong>{{{flash.message}}}
+		</div>
+	{{/if}}
 	<div class="netwidth">
 		{{{body}}}
 	</div>
