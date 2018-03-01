@@ -3,6 +3,8 @@ let app = express();
 let fortune = require('./lib/fortune');
 let formidable = require('formidable');
 let fs = require('fs');
+let jqupload = require('jquery-file-upload-middleware');
+
 //设置handlebars模板引擎
 let handlebars = require('express3-handlebars').create({
 	defaultLayout:'main',
@@ -28,6 +30,7 @@ app.disable('x-powered-by');
 //是否开启视图缓存，一般开发模式下禁用，生产环境下启用
 // app.set('view cache',true);
 
+
 //解析post请求URL编码体的中间件
 app.use(require('body-parser')());
 
@@ -46,8 +49,22 @@ app.use((req,res,next)=>{
 	next();
 });
 
+
 //静态资源中间件
 app.use(express.static(__dirname+'/public'));
+
+app.use('/upload',(req,res,next)=>{
+	let now = Date.now();
+	jqupload.fileHandler({
+		uploadDir(){
+			console.log(`${__dirname}/public/uploads/${now}`);
+			return `${__dirname}/public/uploads/${now}`;
+		},
+		uploadUrl(){
+			return `/uploads/ ${now}`;
+		}
+	})(req,res,next);
+});
 
 //首页
 app.get(['','/home','/home.html'],(req,res)=>{
@@ -96,7 +113,7 @@ app.get(['/thank-you','/thank-you.html'],(req,res)=>{
 	res.render('thank-you');
 });
 
-//文件上传
+//原始文件上传
 app.get(['/contest/vacation-photo','/contest/vacation-photo.html'],(req,res)=>{
 	let now = new Date();
 	res.render('contest/vacation-photo',{
@@ -116,6 +133,13 @@ app.post('/contest/vacation-photo/:year/:month',(req,res)=>{
 		res.redirect(303,'/thank-you');
 	})
 });
+
+//jq文件上传
+app.get(['/uploadfile','/uploadfile.html'],(req,res)=>{
+	res.render('uploadfile');
+});
+
+
 
 //定制404页面
 app.use((req,res)=>{
