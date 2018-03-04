@@ -5,6 +5,36 @@ let formidable = require('formidable');
 let fs = require('fs');
 let jqupload = require('jquery-file-upload-middleware');
 let credentials = require('./credentials');
+let nodemailer = require('nodemailer');
+
+let sendEmail = ()=>{
+	let mailTransport =  nodemailer.createTransport({
+		service:'qq',
+		auth:{
+			user:credentials.email.user,
+			pass:credentials.email.password
+		}
+	});
+
+	let mailOptions = {
+		from:`"xiyan" ${credentials.email.user}`,
+		to:`3129335443@qq.com`,
+		subject:'Your meadowlark Travel Tour',
+		html:`<h1>123123123</h1><hr><p>pppppppppp</p>`,
+		generateTextFromHtml:true
+	}
+
+	mailTransport.sendMail(mailOptions,(err,info)=>{
+		if(err){
+			console(err);
+		}else{
+			console.log(`Massage send: ${info.messageId}`);
+			console.log(`Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
+		}
+	});
+}
+
+sendEmail();
 
 //邮箱正则表达式
 let VALID_EMAIL_REGEX = /^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$/;
