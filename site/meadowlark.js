@@ -7,7 +7,14 @@ let jqupload = require('jquery-file-upload-middleware');
 let credentials = require('./credentials');
 let nodemailer = require('nodemailer');
 
-let sendEmail = ()=>{
+/**
+ * 发送邮件
+ * @Author   Darke
+ * @DateTime 2018-03-04
+ * @param    {object}   mailOptions 邮件配置
+ * @return   {[type]}               [description]
+ */
+let sendEmail = (mailOptions)=>{
 	let mailTransport =  nodemailer.createTransport({
 		service:'qq',
 		auth:{
@@ -16,7 +23,7 @@ let sendEmail = ()=>{
 		}
 	});
 
-	let mailOptions = {
+	let options = {
 		from:`"xiyan" ${credentials.email.user}`,
 		to:`3129335443@qq.com`,
 		subject:'Your meadowlark Travel Tour',
@@ -24,7 +31,7 @@ let sendEmail = ()=>{
 		generateTextFromHtml:true
 	}
 
-	mailTransport.sendMail(mailOptions,(err,info)=>{
+	mailTransport.sendMail(mailOptions||options,(err,info)=>{
 		if(err){
 			console(err);
 		}else{
@@ -34,7 +41,7 @@ let sendEmail = ()=>{
 	});
 }
 
-sendEmail();
+
 
 //邮箱正则表达式
 let VALID_EMAIL_REGEX = /^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$/;
@@ -145,6 +152,24 @@ app.get(['/data/nursery-rhyme','/data/nursery-rhyme.html'],(req,res)=>{
 
 //提交表单
 app.get(['/newsletter','/newsletter.html'],(req,res)=>{
+	//CSRF会在后面添加，目前只提供一个虚拟值
+	// res.render('newsletter',{csrf:'CSRF token goes here'});
+	res.render('newsletter');
+});
+
+
+app.post(['/process','/process.html'],(req,res)=>{
+	if(req.xhr || req.accepts('json,html') === 'json'){
+		res.send({success:true});
+	}else{
+		res.redirect(303,'/thank-you');
+	}
+});
+app.get(['/thank-you','/thank-you.html'],(req,res)=>{
+	res.render('thank-you');
+});
+
+app.post('/process2',(req,res)=>{
 	let name = req.body.name || '',email = req.body.email || '';
 	console.log(email);
 	//输入验证
@@ -185,19 +210,8 @@ app.get(['/newsletter','/newsletter.html'],(req,res)=>{
 		};
 		return res.redirect(303,'/newsletter/archive');
 	});	
-	// //CSRF会在后面添加，目前只提供一个虚拟值
-	// res.render('newsletter',{csrf:'CSRF token goes here'});
 });
-app.post(['/process','/process.html'],(req,res)=>{
-	if(req.xhr || req.accepts('json,html') === 'json'){
-		res.send({success:true});
-	}else{
-		res.redirect(303,'/thank-you');
-	}
-});
-app.get(['/thank-you','/thank-you.html'],(req,res)=>{
-	res.render('thank-you');
-});
+
 
 //原始文件上传
 app.get(['/contest/vacation-photo','/contest/vacation-photo.html'],(req,res)=>{
@@ -225,6 +239,37 @@ app.get(['/uploadfile','/uploadfile.html'],(req,res)=>{
 	res.render('uploadfile');
 });
 
+//thank you page
+app.post('/cart/checkout',(req,res)=>{
+	// let cart = req.session.cart;
+	// // if(!cart){
+	// // 	next(new Error('cart does not exist.'));
+	// // }
+	// let name = req.body.nam||'',email = req.body.email||'';
+	// //输入验证
+	// if(!email.match(VALID_EMAIL_REGEX)){
+	// 	return res.next(new Error('invalid email address.'));
+	// }
+	// //分配一个随机的购物车id；一般我们会用一个数据库id
+	// cart.number = Math.random().toString().replace(/^0\.0*/,'');
+	// cart.billing = {
+	// 	name:name,
+	// 	email:email
+	// };
+	res.render('email/cart-thank-you',{layout:null,cart:{billing:{name:'jone',email:'123@hotmail.com'},number:999}},(err,html)=>{
+		if(err){
+			console.log('email template error!');
+		}
+		sendEmail({
+			from:`"Meadowlark" ${credentials.email.user }`,
+			to:`3129335443@qq.com`,
+			subject:'thank you for book your trip width meadowlark',
+			html:html,
+			generateTextFromHtml:true
+		});
+	});
+	res.render('cart-thank-you',{cart:{billing:{name:'jone',email:'123@hotmail.com'},number:999}});
+});
 
 //定制404页面
 app.use((req,res)=>{

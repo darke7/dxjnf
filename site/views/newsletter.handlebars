@@ -1,6 +1,6 @@
 <h2>Sign up for our newsletter to receive news and specials!</h2>
 <div class="formContainer">
-	<form class="form-horizontal newsletterForm" role="form" action="/process?form=newsletter" method="POST">
+	<form class="form-horizontal newsletterForm" role="form" action="/cart/checkout" method="POST">
 		<input type="hidden" name="_csrf" value="{{csrf}}">
 		<div class="form-group">
 			<label for="fieldName" class="col-sm-2 control-label">Name</label>
@@ -23,26 +23,26 @@
 </div>
 {{#section 'jquery'}}
 <script>
-	$(function(){
-		$('.newsletterForm').on('submit',function(evt){
-			evt.preventDefault();
-			var action = $(this).attr('action');
-			var $container = $(this).closest('.formContainer');
-			$.ajax({
-				url:action,
-				type:'post',
-				success:function(data){
-					if(data.success){
-						$container.html('<h1>Thank you!</h1>');
-					}else{
-						$container.html('There was a problem.');
-					}
-				},
-				error:function(){
-					$container.html('There was a problem.');
-				}
-			});
-		});
-	})
+	// $(function(){
+	// 	$('.newsletterForm').on('submit',function(evt){
+	// 		evt.preventDefault();
+	// 		var action = $(this).attr('action');
+	// 		var $container = $(this).closest('.formContainer');
+	// 		$.ajax({
+	// 			url:action,
+	// 			type:'post',
+	// 			success:function(data){
+	// 				if(data.success){
+	// 					$container.html('<h1>Thank you!</h1>');
+	// 				}else{
+	// 					$container.html('There was a problem.');
+	// 				}
+	// 			},
+	// 			error:function(){
+	// 				$container.html('There was a problem.');
+	// 			}
+	// 		});
+	// 	});
+	// })
 </script>
 {{/section}}
