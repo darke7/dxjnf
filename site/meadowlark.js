@@ -5,42 +5,7 @@ let formidable = require('formidable');
 let fs = require('fs');
 let jqupload = require('jquery-file-upload-middleware');
 let credentials = require('./credentials');
-let nodemailer = require('nodemailer');
-
-/**
- * 发送邮件
- * @Author   Darke
- * @DateTime 2018-03-04
- * @param    {object}   mailOptions 邮件配置
- * @return   {[type]}               [description]
- */
-let sendEmail = (mailOptions)=>{
-	let mailTransport =  nodemailer.createTransport({
-		service:'qq',
-		auth:{
-			user:credentials.email.user,
-			pass:credentials.email.password
-		}
-	});
-
-	let options = {
-		from:`"xiyan" ${credentials.email.user}`,
-		to:`2815808397@qq.com`,
-		subject:'Your meadowlark Travel Tour',
-		html:`<h1>123123123</h1><hr><p>pppppppppp</p>`,
-		generateTextFromHtml:true
-	}
-
-	mailTransport.sendMail(mailOptions||options,(err,info)=>{
-		if(err){
-			console.log(`error :${err}`);
-		}else{
-			console.log(`Massage send: ${info.messageId}`);
-			console.log(`Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
-		}
-	});
-}
-
+let email = require('./lib/email')(credentials);
 
 
 //邮箱正则表达式
@@ -241,34 +206,15 @@ app.get(['/uploadfile','/uploadfile.html'],(req,res)=>{
 
 //thank you page
 app.post('/cart/checkout',(req,res)=>{
-	// let cart = req.session.cart;
-	// // if(!cart){
-	// // 	next(new Error('cart does not exist.'));
-	// // }
-	// let name = req.body.nam||'',email = req.body.email||'';
-	// //输入验证
-	// if(!email.match(VALID_EMAIL_REGEX)){
-	// 	return res.next(new Error('invalid email address.'));
-	// }
-	// //分配一个随机的购物车id；一般我们会用一个数据库id
-	// cart.number = Math.random().toString().replace(/^0\.0*/,'');
-	// cart.billing = {
-	// 	name:name,
-	// 	email:email
-	// };
+	//你的业务逻辑
 	res.render('email/cart-thank-you',{layout:null,cart:{billing:{name:'jone',email:'123@hotmail.com'},number:999}},(err,html)=>{
 		if(err){
 			console.log('email template error!');
 		}
-		let options = {
-			from:`"Meadowlark" ${credentials.email.user}`,
-			to:'3327307668@qq.com',
-			subject:'thank you for book your trip width meadowlark',
-			html:html,
-			// generateTextFromHtml:true
-		};
-		console.log(options);
-		sendEmail(options);
+		let accept = '3327307668@qq.com,2815808397@qq.com';
+		let head = 'thank you for book your trip width meadowlark';
+		let body = html;
+		email.send(accept,head,body);
 	});
 	res.render('cart-thank-you',{cart:{billing:{name:'jone',email:'123@hotmail.com'},number:999}});
 });
