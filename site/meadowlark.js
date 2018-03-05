@@ -25,7 +25,7 @@ let sendEmail = (mailOptions)=>{
 
 	let options = {
 		from:`"xiyan" ${credentials.email.user}`,
-		to:`3129335443@qq.com`,
+		to:`2815808397@qq.com`,
 		subject:'Your meadowlark Travel Tour',
 		html:`<h1>123123123</h1><hr><p>pppppppppp</p>`,
 		generateTextFromHtml:true
@@ -33,7 +33,7 @@ let sendEmail = (mailOptions)=>{
 
 	mailTransport.sendMail(mailOptions||options,(err,info)=>{
 		if(err){
-			console(err);
+			console.log(`error :${err}`);
 		}else{
 			console.log(`Massage send: ${info.messageId}`);
 			console.log(`Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
@@ -260,13 +260,15 @@ app.post('/cart/checkout',(req,res)=>{
 		if(err){
 			console.log('email template error!');
 		}
-		sendEmail({
-			from:`"Meadowlark" ${credentials.email.user }`,
-			to:`3129335443@qq.com`,
+		let options = {
+			from:`"Meadowlark" ${credentials.email.user}`,
+			to:'3327307668@qq.com',
 			subject:'thank you for book your trip width meadowlark',
 			html:html,
-			generateTextFromHtml:true
-		});
+			// generateTextFromHtml:true
+		};
+		console.log(options);
+		sendEmail(options);
 	});
 	res.render('cart-thank-you',{cart:{billing:{name:'jone',email:'123@hotmail.com'},number:999}});
 });
