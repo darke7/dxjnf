@@ -211,7 +211,7 @@ app.post('/cart/checkout',(req,res)=>{
 		if(err){
 			console.log('email template error!');
 		}
-		let accept = '3327307668@qq.com,2815808397@qq.com';
+		let accept = ['3327307668@qq.com','2815808397@qq.com'];
 		let head = 'thank you for book your trip width meadowlark';
 		let body = html;
 		email.send(accept,head,body);

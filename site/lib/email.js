@@ -1,3 +1,4 @@
+let path = require('path');
 let nodemailer = require('nodemailer');
 module.exports = (credentials)=>{
 	let mailTransport = nodemailer.createTransport({
@@ -14,7 +15,7 @@ module.exports = (credentials)=>{
 	return {
 		/**
 		 * 发送邮件
-		 * @param  {string} to   接收人邮箱
+		 * @param  {array} to   接收人邮箱数组
 		 * @param  {string} subj 标题
 		 * @param  {string} body 邮件内容
 		 * @return {[type]}      [description]
@@ -22,17 +23,28 @@ module.exports = (credentials)=>{
 		send(to,subj,body){
 			mailTransport.sendMail({
 				from,
-				to,
+				to:'0asdfasdf',
 				subject:subj,
 				html:body,
 				generateTextFromHtml:true
 			},(err)=>{
 				if(err){
 					console.log(`unable to send email--err :${err}`);
+					let errArr = to;
+					errArr.push(errRecipient)
+					this.emailError(errArr,'这个发邮件的小工具崩溃了',path.parse(__filename).base);
 				}
 			});
 		},
-		emailError(massage,filename,exception){
+		/**
+		 * 网站邮件功能监测工具
+		 * @param  {array} errArr    错误通知接收人数组
+		 * @param  {string} massage   错误信息
+		 * @param  {string} filename  错误文件名
+		 * @param  {string} exception 额外的信息
+		 * @return {[type]}           [description]
+		 */
+		emailError(errArr,massage,filename,exception){
 			let body = `
 				<h1>Meadowlark Travel Site Error</h1>massage<br>
 				<pre>${massage}</pre><br>
@@ -49,7 +61,7 @@ module.exports = (credentials)=>{
 			}
 			mailTransport.sendMail({
 				from:from,
-				to:errRecipient,
+				to:errArr.join(','),
 				subject:'Meadowlark Travel Site Error',
 				html:body,
 				generateTextFromHtml:true
