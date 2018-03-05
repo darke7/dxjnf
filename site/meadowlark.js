@@ -1,3 +1,4 @@
+let http = require('http');
 let express = require('express');
 let app = express();
 let fortune = require('./lib/fortune');
@@ -232,9 +233,7 @@ app.use((err,req,res)=>{
 	res.render('500');
 });
 
-app.listen(app.get('port'),()=>{
-	console.log(`Express started on http://localhost:${app.get('port')}`);
-});
+
 
 
 
@@ -264,4 +263,20 @@ let getWeatherData = ()=>{
 			}
 		]
 	};
+}
+
+
+let startServer = ()=>{
+	http.createServer(app).listen(app.get('port'),()=>{
+		console.log(`Express started in ${app.get('env')} mode on http://localhost:${app.get('port')};press Ctrl-C to terminate.`);
+	});
+	console.log(require.main)
+}
+
+if(require.main === module){
+	//应用程序直接执行；启动应用服务器
+	startServer();
+}else{
+	//应用程序作为一个模块
+	module.exports = startServer;
 }
