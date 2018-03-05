@@ -7,6 +7,18 @@ let jqupload = require('jquery-file-upload-middleware');
 let credentials = require('./credentials');
 let email = require('./lib/email')(credentials);
 
+switch(app.get('env')){
+	case 'development':
+		//紧凑的、彩色的开发日志
+		app.use(require('morgan')('dev'));
+		break;
+	case 'production':
+		//模块'express-logger'支持日志循环
+		app.use(require('express-logger')({
+			path:`${__dirname}/log/requests.log`
+		}));
+		break;
+}
 
 //邮箱正则表达式
 let VALID_EMAIL_REGEX = /^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$/;
@@ -33,7 +45,7 @@ app.set('port',process.env.PORT||3000);
 
 //禁用包含服务器 类型或详细信息 的响应头 
 app.disable('x-powered-by');
-//是否开启视图缓存，一般开发模式下禁用，生产环境下启用
+//是否开启视图缓存，一般开发模式下禁用，生产环境下默认启用
 // app.set('view cache',true);
 
 
@@ -233,7 +245,8 @@ app.use((err,req,res)=>{
 });
 
 app.listen(app.get('port'),()=>{
-	console.log(`Express started on http://localhost:${app.get('port')}`);
+	console.log(`Express started in ${app.get('env')}`);
+	console.log(`http://localhost:${app.get('port')}`);
 });
 
 
