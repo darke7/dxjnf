@@ -37,6 +37,44 @@ app.disable('x-powered-by');
 //是否开启视图缓存，一般开发模式下禁用，生产环境下启用
 // app.set('view cache',true);
 
+app.use((req,res,next)=>{
+	//为这个请求创建一个域
+	let domain = require('domain').create();
+	domain.on('error',(err)=>{
+		try{
+			//在5秒内进行故障保护关机，退出进程
+			setTimeout(()=>{
+				console.log('Failsafe shutdown');
+				process.exit(1);
+			},5000);
+
+			//从集群中断开
+			var worker = require('cluster').worker;
+			if(worker){
+				worker.disconnect();
+			}
+
+			//停止接受新请求
+			server.close;
+			try{
+				//尝试使用Express错误路由
+				next(err);
+			}catch(err){
+				//如果Express错误路由失效，尝试返回普通文本响应
+				console.log(`Express error mechanism failed.\n ${err.stack}`);
+				email.emailError(['3129335443@qq.com'],'<h1>您的服务器发生错误啦！</h1>',err.stack);
+				res.statusCode = 500;
+				res.setHeader('content-type','text/plain');
+				res.end('Server error.');
+			}
+		}catch(err){
+			console.log(`Unable to send 500 response.\n ${err.stack}`)
+		}
+	});
+	domain.add(req);
+	domain.add(res);
+	domain.run(next);
+});
 
 //解析post请求URL编码体的中间件
 app.use(require('body-parser')());
@@ -224,6 +262,16 @@ app.get('/fail',()=>{
 	throw new Error('Nope!');
 });
 
+app.get('/fail',()=>{
+	throw new Error('Nope!');
+});
+
+app.get('/epic-fail',()=>{
+	process.nextTick(()=>{
+		throw new Error('Kaboom!');
+	});
+});
+
 //定制404页面
 app.use((req,res)=>{
 	res.status(404);
@@ -271,8 +319,11 @@ let getWeatherData = ()=>{
 }
 
 
+
+let server;
+
 let startServer = ()=>{
-	http.createServer(app).listen(app.get('port'),()=>{
+	server = http.createServer(app).listen(app.get('port'),()=>{
 		console.log(`Express started in ${app.get('env')} mode on http://localhost:${app.get('port')};press Ctrl-C to terminate.`);
 	});
 }
