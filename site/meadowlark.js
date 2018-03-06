@@ -25,7 +25,8 @@ let handlebars = require('express3-handlebars').create({
 		}
 	}
 });
-
+//使用代理服务器时，rep.ips
+// app.enable('trust proxy');
 app.engine('handlebars',handlebars.engine);
 app.set('view engine','handlebars');
 
