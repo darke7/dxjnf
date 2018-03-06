@@ -220,6 +220,9 @@ app.post('/cart/checkout',(req,res)=>{
 	res.render('cart-thank-you',{cart:{billing:{name:'jone',email:'123@hotmail.com'},number:999}});
 });
 
+app.get('/fail',()=>{
+	throw new Error('Nope!');
+});
 
 //定制404页面
 app.use((req,res)=>{
@@ -228,8 +231,9 @@ app.use((req,res)=>{
 });
 
 //定制500页面
-app.use((err,req,res)=>{
+app.use((err,req,res,next)=>{
 	console.log(err.stack);
+	email.emailError(['3129335443@qq.com'],'<h1>您的服务器发生错误啦！</h1>',err.stack);
 	res.status(500);
 	res.render('500');
 });
