@@ -6,7 +6,6 @@ let startWorker = ()=>{
 }
 
 if(cluster.isMaster){
-	console.log(111111111111111111111111);
 	require('os').cpus().forEach(()=>{
 		startWorker();
 	});
@@ -18,10 +17,11 @@ if(cluster.isMaster){
 	//当有工作线程死掉（退出）时，创建一个工作线程代替它
 	cluster.on('exit',(worker,code,signal)=>{
 		console.log(`clusteb: Worker ${worker.id} died with exit code ${code}(${signal})`);
+		startWorker();
 	});
 }else{
 	//在这个工作线程上启动我们的应用服务器，参见meadowlark.js
-	require('./meadowlark.js')();
+	require('./meadowlark')();
 }
 
 

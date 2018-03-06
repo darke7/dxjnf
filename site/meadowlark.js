@@ -220,6 +220,7 @@ app.post('/cart/checkout',(req,res)=>{
 	res.render('cart-thank-you',{cart:{billing:{name:'jone',email:'123@hotmail.com'},number:999}});
 });
 
+
 //定制404页面
 app.use((req,res)=>{
 	res.status(404);
@@ -270,7 +271,6 @@ let startServer = ()=>{
 	http.createServer(app).listen(app.get('port'),()=>{
 		console.log(`Express started in ${app.get('env')} mode on http://localhost:${app.get('port')};press Ctrl-C to terminate.`);
 	});
-	console.log(require.main)
 }
 
 if(require.main === module){
