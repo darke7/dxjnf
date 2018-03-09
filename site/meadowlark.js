@@ -8,6 +8,12 @@ let jqupload = require('jquery-file-upload-middleware');
 let credentials = require('./credentials');
 let email = require('./lib/email')(credentials);
 
+//上传文件
+//确保保存在目录data
+let dataDir = `${__dirname}/data`;
+let vacationPhotoDir = `${dataDir}/vacation-photo`;
+fs.existsSync(dataDir)||fs.mkdirSync(dataDir);
+fs.existsSync(vacationPhotoDir)||fs.mkdirSync(vacationPhotoDir);
 
 //邮箱正则表达式
 let VALID_EMAIL_REGEX = /^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$/;
@@ -218,7 +224,7 @@ app.post('/process2',(req,res)=>{
 });
 
 
-//原始文件上传
+//新始文件上传
 app.get(['/contest/vacation-photo','/contest/vacation-photo.html'],(req,res)=>{
 	let now = new Date();
 	res.render('contest/vacation-photo',{
@@ -231,12 +237,36 @@ app.post('/contest/vacation-photo/:year/:month',(req,res)=>{
 		if(err){
 			return res.redirect(303,'/error');
 		}
-		console.log('received fields:');
-		console.log(fields);
-		console.log('received files:');
-		console.log(files);
-		res.redirect(303,'/thank-you');
+		if(err){
+			res.session.flash = {
+				type:'danger',
+				intro:'Oops!',
+				message:'There was an errorprocessing your submission.Pelase try again.'
+			}
+			return res.redirect(303,'/contest/vacation-photo');
+		}
+		let photo = files.photo;
+		let dir = `${vacationPhotoDir}/${Date.now()}`;
+		let path = `${dir}/${photo.name}`;
+		fs.mkdirSync(dir);
+		fs.renameSync(photo.path,`${dir}/${photo.name}`);
+		// 以某种方式将用户的将用户上传的文件和其邮件地址，年月日，关联起来
+		// saveContesEntry('vacation-photo',fields.email,req.req.params.year,req.params.month,path);
+		req.session.flash = {
+			type:'success',
+			intro:'Good luck',
+			message:'You have been entered into the contest.'
+		};
+		return res.redirect(303,'/contest/vacation-photo/entries');
+		// // console.log('received fields:');
+		// // console.log(fields);
+		// // console.log('received files:');
+		// // console.log(files);
+		// res.redirect(303,'/thank-you');
 	})
+});
+app.get('/contest/vacation-photo/entries',(req,res)=>{
+	res.render('entries');
 });
 
 //jq文件上传
