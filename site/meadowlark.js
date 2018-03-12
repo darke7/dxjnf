@@ -332,6 +332,12 @@ app.get('/user',authorize,(req,res)=>{
 	res.render('user/user');
 });
 
+//这个正则表达式数组的所允许的所有页面
+//'.'可以不经过转义用在路由中
+app.get(['/xuser|name','/kha+n'],(req,res)=>{
+	res.render('zz');
+});
+
 //定制404页面
 app.use((req,res)=>{
 	res.status(404);
