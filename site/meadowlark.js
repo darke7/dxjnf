@@ -8,6 +8,18 @@ let jqupload = require('jquery-file-upload-middleware');
 let credentials = require('./credentials');
 let email = require('./lib/email')(credentials);
 
+//授权处理器
+let authorize = (req,res,next)=>{
+	if(req.cookies.authorize){
+		console.log(1);
+		console.log(req.cookies.authorize);
+		return next()
+	};
+	console.log(2);
+	console.log(req.cookies.authorize);
+	res.render('user/not-authorized');
+};
+
 //上传文件
 //确保保存在目录data
 let dataDir = `${__dirname}/data`;
@@ -314,6 +326,10 @@ app.get('/epic-fail',()=>{
 	process.nextTick(()=>{
 		throw new Error('Kaboom!');
 	});
+});
+
+app.get('/user',authorize,(req,res)=>{
+	res.render('user/user');
 });
 
 //定制404页面
