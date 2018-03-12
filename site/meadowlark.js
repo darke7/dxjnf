@@ -32,6 +32,56 @@ let vhost = require('vhost');
 //邮箱正则表达式
 let VALID_EMAIL_REGEX = /^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$/;
 
+//员工信息
+let staff = {
+	beijing:{
+		qwe1:{
+			name:'张珊',
+			sex:'女',
+			age:28,
+			position:'销售',
+			city:'beijing'
+		},
+		qwe2:{
+			name:'王二',
+			sex:'男',
+			age:36,
+			position:'经理',
+			city:'beijing'
+		},
+		qwe3:{
+			name:'李狗蛋',
+			sex:'男',
+			age:23,
+			position:'销售',
+			city:'beijing'
+		}
+	},
+	shenzhen:{
+		qwe1:{
+			name:'江副',
+			sex:'男',
+			age:40,
+			position:'经理',
+			city:'shenzhen'
+		},
+		qwe2:{
+			name:'高新',
+			sex:'男',
+			age:32,
+			position:'销售',
+			city:'shenzhen'
+		},
+		qwe3:{
+			name:'廖安',
+			sex:1,
+			age:23,
+			position:'销售',
+			city:'shenzhen'
+		}
+	}
+}
+
 //设置handlebars模板引擎
 let handlebars = require('express3-handlebars').create({
 	defaultLayout:'main',
@@ -337,6 +387,17 @@ app.get('/user',authorize,(req,res)=>{
 app.get(['/xuser|name','/kha+n'],(req,res)=>{
 	res.render('zz');
 });
+
+//根据路由参数来返回员工信息
+app.get('/staff/:city/:nameId',(req,res,next)=>{
+	let info = staff[req.params.city][req.params.nameId];
+	if(!info){
+		return next(); //最终将会落入404
+	}
+	res.render('manage/staff',info);
+});
+
+
 
 //定制404页面
 app.use((req,res)=>{
