@@ -15,6 +15,8 @@ let vacationPhotoDir = `${dataDir}/vacation-photo`;
 fs.existsSync(dataDir)||fs.mkdirSync(dataDir);
 fs.existsSync(vacationPhotoDir)||fs.mkdirSync(vacationPhotoDir);
 
+let vhost = require('vhost');
+
 //邮箱正则表达式
 let VALID_EMAIL_REGEX = /^(\w)+(\.\w+)*@(\w)+((\.\w+)+)$/;
 
@@ -99,6 +101,17 @@ app.use((req,res,next)=>{
 	next();
 });
 
+//子域名配置
+let admin = express.Router();
+app.use(vhost('admin.*',admin));
+admin.get('/',(req,res)=>{
+	res.render('admin/home');
+});
+admin.get('/users',(req,res)=>{
+	res.render('admin/users');
+});
+
+
 //开启测试模式
 app.use((req,res,next)=>{
 	res.locals.showTests = app.get('env') != 'production' && req.query.test === '1';
@@ -131,7 +144,7 @@ app.use((req,res,next)=>{
 
 
 //首页
-app.get(['','/home','/home.html'],(req,res)=>{
+app.get(['/','/home','/home.html'],(req,res)=>{
 	res.render('home');
 });
 
